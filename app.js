@@ -1,42 +1,37 @@
-var createError = require('http-errors');
+// --- IMPORTS Y CONFIGURACIÓN ---
 var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-
 var app = express();
+const mongoose = require('mongoose');
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+mongoose.connect('mongodb://localhost:27017/edv-database', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('Connected to MongoDB'))
+.catch((err) => console.error('Error at trying to connect to MongoDB:', err));
 
-app.use(logger('dev'));
+// --- MIDDLEWARES ---
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
+// --- RUTAS APIs (si las necesitas) ---
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users');
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use(express.static('public'))
 
-// catch 404 and forward to error handler
+// --- ERROR 404 ---
 app.use(function(req, res, next) {
-  next(createError(404));
+  res.status(404).json({ error: true, message: 'Ruta no encontrada' });
 });
 
-// error handler
+// --- ERROR GENERAL ---
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  res.status(err.status || 500).json({
+    error: true,
+    message: err.message || 'Error interno del servidor',
+    stack: req.app.get('env') === 'development' ? err.stack : {}
+  });
 });
 
 module.exports = app;
