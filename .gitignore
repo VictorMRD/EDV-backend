@@ -1,10 +1,6 @@
 # Node modules (nunca se suben)
 node_modules/
 
-# Archivos de entorno (claves, contraseñas, etc.)
-.env
-.env.*  # por si usás .env.development, .env.production, etc.
-
 # Logs
 logs/
 *.log
