@@ -3,7 +3,7 @@ var express = require('express');
 var app = express();
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017/edv-database', {
+mongoose.connect('mongodb://edv-mongo:27017/edv-database', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
